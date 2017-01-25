@@ -31,9 +31,6 @@ int BLUEPIN = D5;
 
 boolean touchStates[12]; //to keep track of the previous touch states
 
-int toRGB[3] = {0, 0, 0};
-int currentRGB[3] = {0, 0, 0};
-
 int peepholeTouchCount = 0;
 
 unsigned long getTimeTimer = 0;
@@ -41,6 +38,8 @@ unsigned long timeout = 0;
 bool timeoutEnable = true;
 int currentTime = 0;
 bool nightMode = true;
+
+bool colorCycleEnable = false;
 
 WiFiServer server(80);
 
@@ -74,47 +73,8 @@ void loop() {
   colorChange();
   iterateTimeout();
   processNetwork();
-  delay(1);
-}
-
-void iterateTimeout() {
-  if (millis() > timeout && timeoutEnable) { // If the timeout time has passed and the timeout is enabled
-    setDefault();
-  }
-}
-
-void setDefault() {
-  if (nightMode)
-    setColor(2, 0, 0, 0); // default color
-  else
-    setColor(10, 10, 10, 0);
-}
-
-void colorChange() {
-  for (int i = 0; i < 3; i++) {
-    if (toRGB[i] > currentRGB[i]) {
-      currentRGB[i]++;
-    } else if (toRGB[i] < currentRGB[i]) {
-      currentRGB[i]--;
-    }
-  }
-
-  analogWrite(REDPIN, currentRGB[0]);
-  analogWrite(GREENPIN, currentRGB[1]);
-  analogWrite(BLUEPIN, currentRGB[2]);
-}
-
-void setColor(int R, int G, int B, int t) {
-  toRGB[0] = R;
-  toRGB[1] = G;
-  toRGB[2] = B;
-
-  if (t > 0) { // If the timeout value input is zero, then just disable the timeout
-    timeoutEnable = true;
-    timeout = millis() + t; // Timeout before reverts to default
-  } else {
-    timeoutEnable = false;
-  }
+  if (colorCycleEnable)
+    colorWheelCycle();
 }
 
 void readTouchInputs() {
@@ -135,18 +95,12 @@ void readTouchInputs() {
           Serial.print("pin ");
           Serial.print(i);
           Serial.println(" was just touched");
-          /*
-            if (i == 8) {
-            if (touchStates[11] == 0) {
-              setColor(1, 1, 1, 0);
-            } else {
-              setColor(55, 0, 0, 0); // Set the color to red
-            }
-            }*/
+
           if (i == 0) {
             peepholeTouchCount++;
 
-            setColor(255, 0, 0, 0);
+            colorCycleEnable = true;
+            //setColor(255, 0, 0, 0);
           }
 
         } else if (touchStates[i] == 1) {
@@ -161,18 +115,14 @@ void readTouchInputs() {
           Serial.println(" is no longer being touched");
 
           if (i == 0) {
-            if(!nightMode)
-              setColor(0, 55, 0, 2000);
+            if (!nightMode)
+              setColor(255, 255, 255, 2000, 200);
             else
-              setDefault();
+              setColor(100, 0, 0, 3500, 500);
+              
+
+            colorCycleEnable = false;
           }
-          /*
-            if (i == 8 && touchStates[11] == 1) {
-            setColor(55, 0, 55, 2000); // Set color to blue when it is let go of
-            }
-            if (i == 8) {
-            setColor(255, 255, 255, 0);
-            }*/
 
           //pin i is no longer being touched
         }
@@ -180,7 +130,6 @@ void readTouchInputs() {
       }
 
     }
-    //    processPins(); // A pin was touched, let's process it.
   }
 }
 
