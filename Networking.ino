@@ -94,7 +94,7 @@ void getTime() {
       nightMode = true;
     else
       nightMode = false;
-    setDefault();
+    setDefault(60000);
     Serial.println("Timestamp : " + String(time));
     Serial.println("Current time in hours : " + String(currentTime));
   }

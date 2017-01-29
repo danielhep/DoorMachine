@@ -99,8 +99,10 @@ void readTouchInputs() {
           if (i == 0) {
             peepholeTouchCount++;
 
-            colorCycleEnable = true;
-            //setColor(255, 0, 0, 0);
+            if(nightMode)
+              setColor(255, 0, 0, 0, 500);
+            else
+              colorCycleEnable = true;
           }
 
         } else if (touchStates[i] == 1) {

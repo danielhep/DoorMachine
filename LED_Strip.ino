@@ -7,10 +7,14 @@ unsigned long RGBSetTime;
 int RGBFadeTime;
 
 void setDefault() {
+  setDefault(1000);
+}
+
+void setDefault(int fadeTime) {
   if (nightMode)
-    setColor(2, 0, 0, 0); // default color
+    setColor(2, 0, 0, 0, fadeTime); // default color
   else
-    setColor(10, 10, 10, 0);
+    setColor(10, 10, 10, 0, fadeTime);
 }
 
 void colorChange() {
@@ -43,11 +47,11 @@ void setColor(int R, int G, int B, int t, unsigned long fadeTime) {
     slopeRGB[i] = (toRGB[i] - currentRGB[i]) / (fadeTime);
 
     /*Serial.println("Difference: " + String(toRGB[i] - currentRGB[i]));
-    Serial.println("CurrentRGB: " + String(currentRGB[i]));
-    Serial.println("ToRGB: " + String(toRGB[i]));
-    Serial.println("Fade time: " + String(fadeTime));
-    Serial.print("Slope: ");
-    Serial.println(slopeRGB[i], 5);*/
+      Serial.println("CurrentRGB: " + String(currentRGB[i]));
+      Serial.println("ToRGB: " + String(toRGB[i]));
+      Serial.println("Fade time: " + String(fadeTime));
+      Serial.print("Slope: ");
+      Serial.println(slopeRGB[i], 5);*/
     interceptRGB[i] = currentRGB[i];
   }
 
