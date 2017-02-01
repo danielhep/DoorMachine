@@ -51,7 +51,6 @@ bool nightMode = true;
 WiFiServer server(80);
 
 void setup() {
-  analogWriteRange(10);
   pinMode(irqpin, INPUT);
   digitalWrite(irqpin, HIGH); //enable pullup resistor
 
