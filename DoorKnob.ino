@@ -24,14 +24,23 @@
 #include <Wire.h>
 #include <ArduinoJson.h>
 
+#define EFFECT_WHEEL 1
+
 int irqpin = D3;  // Digital 3
 int REDPIN = D6;
-int GREENPIN = D7;
-int BLUEPIN = D5;
+int GREENPIN = D5;
+int BLUEPIN = D7;
+
+int MOTION_PIN = D8;
+
+int ledStripEffect = 0;
+int effectStrength = 255;
+int effectTime = 3000;
 
 boolean touchStates[12]; //to keep track of the previous touch states
 
 int peepholeTouchCount = 0;
+int motionDetectorCount = 0;
 
 unsigned long getTimeTimer = 0;
 unsigned long timeout = 0;
@@ -39,13 +48,14 @@ bool timeoutEnable = true;
 int currentTime = 0;
 bool nightMode = true;
 
-bool colorCycleEnable = false;
-
 WiFiServer server(80);
 
 void setup() {
+  analogWriteRange(10);
   pinMode(irqpin, INPUT);
   digitalWrite(irqpin, HIGH); //enable pullup resistor
+
+  pinMode(MOTION_PIN, INPUT);
 
   Serial.begin(9600);
   Wire.begin();
@@ -62,6 +72,8 @@ void setup() {
   Serial.println(WiFi.localIP());
   server.begin();
 
+  pinMode(LED_BUILTIN, OUTPUT);
+
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
@@ -73,8 +85,27 @@ void loop() {
   colorChange();
   iterateTimeout();
   processNetwork();
-  if (colorCycleEnable)
-    colorWheelCycle();
+  checkMotionDetector();
+}
+
+bool motionDetectorTripped = false;
+void checkMotionDetector() {
+  if (digitalRead(MOTION_PIN) == HIGH) {
+    if (!motionDetectorTripped) {
+      motionDetectorCount++;
+      digitalWrite(LED_BUILTIN, LOW);
+      if (nightMode)
+        setColor(15, 0, 0, 10000, 200);
+      else
+        setColor(100, 100, 100, 10000, 200);
+      motionDetectorTripped = true;
+    }
+  } else {
+    if (motionDetectorTripped) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      motionDetectorTripped = false;
+    }
+  }
 }
 
 void readTouchInputs() {
@@ -95,14 +126,13 @@ void readTouchInputs() {
           Serial.print("pin ");
           Serial.print(i);
           Serial.println(" was just touched");
-
           if (i == 0) {
             peepholeTouchCount++;
 
-            if(nightMode)
+            if (nightMode)
               setColor(255, 0, 0, 0, 500);
             else
-              colorCycleEnable = true;
+              setEffect(EFFECT_WHEEL, 255, 900);
           }
 
         } else if (touchStates[i] == 1) {
@@ -121,9 +151,6 @@ void readTouchInputs() {
               setColor(255, 255, 255, 2000, 200);
             else
               setColor(100, 0, 0, 3500, 500);
-              
-
-            colorCycleEnable = false;
           }
 
           //pin i is no longer being touched

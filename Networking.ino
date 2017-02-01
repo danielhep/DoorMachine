@@ -92,6 +92,7 @@ void getTime() {
     currentTime = time / 3600 % 24;
     if (currentTime <= 7 || currentTime >= 23)
       nightMode = true;
+      //nightMode = false;
     else
       nightMode = false;
     setDefault(60000);
@@ -115,6 +116,7 @@ String prepareHtmlPage() {
     " <!DOCTYPE HTML> " +
     "<html>" +
     "Peephole touch count:  " + String(peepholeTouchCount) + " <br /> " +
+    "# of people walked by: " + String(motionDetectorCount) + " <br /> " +
     "Night mode: " + String(nightMode) +
     " <br /> Edens North #148" +
     " </ html> " +

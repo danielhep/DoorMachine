@@ -6,18 +6,10 @@ int interceptRGB[3] = {0, 0, 0};
 unsigned long RGBSetTime;
 int RGBFadeTime;
 
-void setDefault() {
-  setDefault(1000);
-}
-
-void setDefault(int fadeTime) {
-  if (nightMode)
-    setColor(2, 0, 0, 0, fadeTime); // default color
-  else
-    setColor(10, 10, 10, 0, fadeTime);
-}
-
 void colorChange() {
+  if (ledStripEffect == EFFECT_WHEEL)
+    colorWheelEffect();
+
   unsigned long tsnapshot = millis();
   for (int i = 0; i < 3; i++) {
     if (tsnapshot < RGBSetTime + RGBFadeTime) {
@@ -27,9 +19,24 @@ void colorChange() {
     }
   }
 
+  //Serial.println("RGB: " + String(currentRGB[0]) + ", " + String(currentRGB[1]) + ", " + String(currentRGB[2]));
+
   analogWrite(REDPIN, int(currentRGB[0]));
   analogWrite(GREENPIN, int(currentRGB[1]));
   analogWrite(BLUEPIN, int(currentRGB[2]));
+}
+
+void setDefault() {
+  setDefault(1000);
+}
+
+void setDefault(int fadeTime) {
+  if (nightMode)
+    setColor(0, 0, 0, 0, fadeTime); // default color
+  else {
+    //setColor(15, 0, 10, 0, fadeTime);
+    setEffect(EFFECT_WHEEL, 50, 3000);
+  }
 }
 
 void iterateTimeout() {
@@ -38,25 +45,13 @@ void iterateTimeout() {
   }
 }
 
+////////////////////
+// This section is for setting the color and calculating the values for the color slopes
+////////////////////
+
 void setColor(int R, int G, int B, int t, unsigned long fadeTime) {
-  toRGB[0] = R;
-  toRGB[1] = G;
-  toRGB[2] = B;
-
-  for (int i = 0; i < 3; i++) {
-    slopeRGB[i] = (toRGB[i] - currentRGB[i]) / (fadeTime);
-
-    /*Serial.println("Difference: " + String(toRGB[i] - currentRGB[i]));
-      Serial.println("CurrentRGB: " + String(currentRGB[i]));
-      Serial.println("ToRGB: " + String(toRGB[i]));
-      Serial.println("Fade time: " + String(fadeTime));
-      Serial.print("Slope: ");
-      Serial.println(slopeRGB[i], 5);*/
-    interceptRGB[i] = currentRGB[i];
-  }
-
-  RGBSetTime = millis();
-  RGBFadeTime = fadeTime;
+  setEffect(0, 0, 0); // Get rid of any effect
+  setLinearColorGraph(R, G, B, fadeTime); // Set the color fade graph
 
   if (t > 0) { // If the timeout value input is zero, then just disable the timeout
     timeoutEnable = true;
@@ -70,18 +65,41 @@ void setColor(int R, int G, int B, int t) {
   setColor(R, G, B, t, 1000);
 }
 
+void setEffect(int effect, int strength, int eTime) {
+  ledStripEffect = effect;
+  effectStrength = strength;
+  effectTime = eTime;
+  
+  timeoutEnable = false;
+
+  Serial.println("Effect set: " + String(effect) + " at strength: " + String(strength));
+}
+
+void setLinearColorGraph(int R, int G, int B, int fadeTime) {
+  toRGB[0] = R;
+  toRGB[1] = G;
+  toRGB[2] = B;
+
+  for (int i = 0; i < 3; i++) {
+    slopeRGB[i] = (toRGB[i] - currentRGB[i]) / (fadeTime);
+    interceptRGB[i] = currentRGB[i];
+  }
+
+  RGBSetTime = millis();
+  RGBFadeTime = fadeTime;
+}
+
 int wheelFlag = 0;
-void colorWheelCycle() {
-  int colorTime = millis() % 3000;
-  if (colorTime > 0 && colorTime < 1000 && wheelFlag != 1) {
-    setColor(255, 0, 0, 0, 1000);
+void colorWheelEffect() {
+  int colorTime = millis() % effectTime;
+  if (colorTime > 0 && colorTime < effectTime/3 && wheelFlag != 1) {
+    setLinearColorGraph(effectStrength, 0, 0, effectTime/3);
     wheelFlag = 1;
-  } else if (colorTime > 1000 && colorTime < 2000 && wheelFlag != 2) {
-    setColor(0, 255, 0, 0, 1000);
+  } else if (colorTime > effectTime/3 && colorTime < (2*effectTime)/3 && wheelFlag != 2) {
+    setLinearColorGraph(0, effectStrength, 0, effectTime/3);
     wheelFlag = 2;
-  } else if (colorTime > 2000 && colorTime < 3000 && wheelFlag != 3) {
-    setColor(0, 0, 255, 0, 1000);
+  } else if (colorTime > (2*effectTime)/3 && colorTime < effectTime && wheelFlag != 3) {
+    setLinearColorGraph(0, 0, effectStrength, effectTime/3);
     wheelFlag = 3;
   }
 }
-
