@@ -25,6 +25,7 @@
 #include <ArduinoJson.h>
 
 #define EFFECT_WHEEL 1
+#define EFFECT_WATER 2
 
 int irqpin = D3;  // Digital 3
 int REDPIN = D6;

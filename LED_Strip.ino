@@ -35,7 +35,7 @@ void setDefault(int fadeTime) {
     setColor(0, 0, 0, 0, fadeTime); // default color
   else {
     //setColor(15, 0, 10, 0, fadeTime);
-    setEffect(EFFECT_WHEEL, 50, 3000);
+    setEffect(EFFECT_WATER, 255, 6000);
   }
 }
 
@@ -69,7 +69,7 @@ void setEffect(int effect, int strength, int eTime) {
   ledStripEffect = effect;
   effectStrength = strength;
   effectTime = eTime;
-  
+
   timeoutEnable = false;
 
   Serial.println("Effect set: " + String(effect) + " at strength: " + String(strength));
@@ -92,14 +92,43 @@ void setLinearColorGraph(int R, int G, int B, int fadeTime) {
 int wheelFlag = 0;
 void colorWheelEffect() {
   int colorTime = millis() % effectTime;
-  if (colorTime > 0 && colorTime < effectTime/3 && wheelFlag != 1) {
-    setLinearColorGraph(effectStrength, 0, 0, effectTime/3);
+  if (colorTime > 0 && colorTime < effectTime / 3 && wheelFlag != 1) {
+    setLinearColorGraph(effectStrength, 0, 0, effectTime / 3);
     wheelFlag = 1;
-  } else if (colorTime > effectTime/3 && colorTime < (2*effectTime)/3 && wheelFlag != 2) {
-    setLinearColorGraph(0, effectStrength, 0, effectTime/3);
+  } else if (colorTime > effectTime / 3 && colorTime < (2 * effectTime) / 3 && wheelFlag != 2) {
+    setLinearColorGraph(0, effectStrength, 0, effectTime / 3);
     wheelFlag = 2;
-  } else if (colorTime > (2*effectTime)/3 && colorTime < effectTime && wheelFlag != 3) {
-    setLinearColorGraph(0, 0, effectStrength, effectTime/3);
+  } else if (colorTime > (2 * effectTime) / 3 && colorTime < effectTime && wheelFlag != 3) {
+    setLinearColorGraph(0, 0, effectStrength, effectTime / 3);
     wheelFlag = 3;
   }
+}
+
+void waterWheelEffect() {
+  int colorTime = millis() % effectTime;
+  int R;
+  int G;
+  int B;
+  
+  if (colorTime > 0 && colorTime < effectTime / 3 && wheelFlag != 1) {
+    R = 96/255*effectStrength;
+    G = 221/255*effectStrength;
+    B = 142/255*effectStrength;
+
+    wheelFlag = 1;
+  } else if (colorTime > effectTime / 3 && colorTime < effectTime * 2 / 3 && wheelFlag != 2) {
+    R = 24/255*effectStrength;
+    G = 138/255*effectStrength;
+    B = 141/255*effectStrength;
+    
+    wheelFlag = 2;
+  } else if (colorTime > effectTime * 2 / 3 && colorTime < effectTime && wheelFlag != 3) {
+    R = 20/255*effectStrength;
+    G = 17/255*effectStrength;
+    B = 99/255*effectStrength;
+    
+    wheelFlag = 3;
+  }
+
+  setLinearColorGraph(R, G, B, effectTime / 3);
 }
