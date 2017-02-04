@@ -35,7 +35,7 @@ void processNetwork() {
   {
     Serial.println("Getting time...");
     getTime();
-    getTimeTimer = millis() + 100000;
+    getTimeTimer = millis() + 600000;
   }
 }
 /*
@@ -117,7 +117,8 @@ String prepareHtmlPage() {
     "<html>" +
     "Peephole touch count:  " + String(peepholeTouchCount) + " <br /> " +
     "# of people walked by: " + String(motionDetectorCount) + " <br /> " +
-    "Night mode: " + String(nightMode) +
+    "Night mode: " + String(nightMode) + " <br /> " +
+    "Uptime: " + String((int)((millis()/60000) % 60)) + " minutes and " + String((int) (millis()/3600000)) + " hours. <br />" +
     " <br /> Edens North #148" +
     " </ html> " +
     "\r\n";
