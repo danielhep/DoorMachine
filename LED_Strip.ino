@@ -110,24 +110,18 @@ void waterWheelEffect() {
   int G;
   int B;
   
-  if (colorTime > 0 && colorTime < effectTime / 3 && wheelFlag != 1) {
+  if (colorTime > 0 && colorTime < effectTime / 2 && wheelFlag != 1) {
     R = 96/255*effectStrength;
     G = 221/255*effectStrength;
     B = 142/255*effectStrength;
 
     wheelFlag = 1;
-  } else if (colorTime > effectTime / 3 && colorTime < effectTime * 2 / 3 && wheelFlag != 2) {
-    R = 24/255*effectStrength;
-    G = 138/255*effectStrength;
-    B = 141/255*effectStrength;
-    
-    wheelFlag = 2;
-  } else if (colorTime > effectTime * 2 / 3 && colorTime < effectTime && wheelFlag != 3) {
+  } else if (colorTime > effectTime / 2 && colorTime < effectTime && wheelFlag != 2) {
     R = 20/255*effectStrength;
     G = 17/255*effectStrength;
     B = 99/255*effectStrength;
     
-    wheelFlag = 3;
+    wheelFlag = 2;
   }
 
   setLinearColorGraph(R, G, B, effectTime / 3);
