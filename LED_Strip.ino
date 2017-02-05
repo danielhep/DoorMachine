@@ -115,7 +115,7 @@ void waterWheelEffect() {
 
   // Serial.println(String(colorTime) + ", " + String(effectTime) + ", " + String(effectStrength));
 
-  if (colorTime > 0 && colorTime < (effectTime / 3) && wheelFlag != 1) {
+  if (colorTime > 0 && colorTime < (effectTime / 2) && wheelFlag != 1) {
     // Serial.println("TIME FOR NUMBER 1");
     R = 96 * effectStrength / 255;
     G = 221 * effectStrength / 255;
@@ -123,28 +123,18 @@ void waterWheelEffect() {
 
    // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
 
-    setLinearColorGraph(R, G, B, effectTime/3);
+    setLinearColorGraph(R, G, B, effectTime/2);
 
     wheelFlag = 1;
-  } else if (colorTime > effectTime / 3 && colorTime < effectTime * 2 / 3 && wheelFlag != 2) {
-    R = 24 * effectStrength / 255;
-    G = 138 * effectStrength / 255;
-    B = 141 * effectStrength / 255;
-
-   // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
-
-    setLinearColorGraph(R, G, B, effectTime/3);
-
-    wheelFlag = 2;
-  } else if (colorTime > effectTime * 2 / 3 && colorTime < effectTime && wheelFlag != 3) {
+  } else if (colorTime > effectTime / 2 && colorTime < effectTime && wheelFlag != 2) {
     R = 20 * effectStrength / 255;
     G = 17 * effectStrength / 255;
     B = 99 * effectStrength / 255;
 
    // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
 
-    setLinearColorGraph(R, G, B, effectTime/3);
+    setLinearColorGraph(R, G, B, effectTime/2);
 
-    wheelFlag = 3;
+    wheelFlag = 2;
   }
 }
