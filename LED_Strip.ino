@@ -9,6 +9,8 @@ int RGBFadeTime;
 void colorChange() {
   if (ledStripEffect == EFFECT_WHEEL)
     colorWheelEffect();
+  else if (ledStripEffect == EFFECT_WATER)
+    waterWheelEffect();
 
   unsigned long tsnapshot = millis();
   for (int i = 0; i < 3; i++) {
@@ -35,7 +37,7 @@ void setDefault(int fadeTime) {
     setColor(0, 0, 0, 0, fadeTime); // default color
   else {
     //setColor(15, 0, 10, 0, fadeTime);
-    setEffect(EFFECT_WATER, 255, 6000);
+    setEffect(EFFECT_WATER, 100, 6000);
   }
 }
 
@@ -106,23 +108,43 @@ void colorWheelEffect() {
 
 void waterWheelEffect() {
   int colorTime = millis() % effectTime;
-  int R;
-  int G;
-  int B;
-  
-  if (colorTime > 0 && colorTime < effectTime / 2 && wheelFlag != 1) {
-    R = 96/255*effectStrength;
-    G = 221/255*effectStrength;
-    B = 142/255*effectStrength;
+
+  int R = 0;
+  int G = 0;
+  int B = 0;
+
+  // Serial.println(String(colorTime) + ", " + String(effectTime) + ", " + String(effectStrength));
+
+  if (colorTime > 0 && colorTime < (effectTime / 3) && wheelFlag != 1) {
+    // Serial.println("TIME FOR NUMBER 1");
+    R = 96 * effectStrength / 255;
+    G = 221 * effectStrength / 255;
+    B = 142 * effectStrength / 255;
+
+   // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
+
+    setLinearColorGraph(R, G, B, effectTime/3);
 
     wheelFlag = 1;
-  } else if (colorTime > effectTime / 2 && colorTime < effectTime && wheelFlag != 2) {
-    R = 20/255*effectStrength;
-    G = 17/255*effectStrength;
-    B = 99/255*effectStrength;
-    
-    wheelFlag = 2;
-  }
+  } else if (colorTime > effectTime / 3 && colorTime < effectTime * 2 / 3 && wheelFlag != 2) {
+    R = 24 * effectStrength / 255;
+    G = 138 * effectStrength / 255;
+    B = 141 * effectStrength / 255;
 
-  setLinearColorGraph(R, G, B, effectTime / 3);
+   // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
+
+    setLinearColorGraph(R, G, B, effectTime/3);
+
+    wheelFlag = 2;
+  } else if (colorTime > effectTime * 2 / 3 && colorTime < effectTime && wheelFlag != 3) {
+    R = 20 * effectStrength / 255;
+    G = 17 * effectStrength / 255;
+    B = 99 * effectStrength / 255;
+
+   // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
+
+    setLinearColorGraph(R, G, B, effectTime/3);
+
+    wheelFlag = 3;
+  }
 }
