@@ -117,9 +117,9 @@ void waterWheelEffect() {
 
   if (colorTime > 0 && colorTime < (effectTime / 2) && wheelFlag != 1) {
     // Serial.println("TIME FOR NUMBER 1");
-    R = 96 * effectStrength / 255;
-    G = 221 * effectStrength / 255;
-    B = 142 * effectStrength / 255;
+    R = 119 * effectStrength / 255;
+    G = 255 * effectStrength / 255;
+    B = 75 * effectStrength / 255;
 
    // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
 
@@ -127,9 +127,9 @@ void waterWheelEffect() {
 
     wheelFlag = 1;
   } else if (colorTime > effectTime / 2 && colorTime < effectTime && wheelFlag != 2) {
-    R = 20 * effectStrength / 255;
-    G = 17 * effectStrength / 255;
-    B = 99 * effectStrength / 255;
+    R = 220 * effectStrength / 255;
+    G = 21 * effectStrength / 255;
+    B = 75 * effectStrength / 255;
 
    // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
 
