@@ -37,7 +37,7 @@ void setDefault(int fadeTime) {
     setColor(0, 0, 0, 0, fadeTime); // default color
   else {
     //setColor(15, 0, 10, 0, fadeTime);
-    setEffect(EFFECT_WATER, 100, 6000);
+    setEffect(EFFECT_WHEEL, 100, 3000);
   }
 }
 
