@@ -1,3 +1,4 @@
+
 /*Copyright (c) 2010 bildr community
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +24,7 @@
 #include <ESP8266WiFi.h>
 #include <Wire.h>
 #include <ArduinoJson.h>
+#include <LiquidCrystal_I2C.h>
 
 #define EFFECT_WHEEL 1
 #define EFFECT_WATER 2
@@ -50,7 +52,8 @@ int currentTime = 0;
 bool nightMode = true;
 
 WiFiServer server(80);
-
+LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+  
 void setup() {
   pinMode(irqpin, INPUT);
   digitalWrite(irqpin, HIGH); //enable pullup resistor
@@ -78,6 +81,19 @@ void setup() {
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
   mpr121_setup();
+
+  lcd.init();                      // initialize the lcd 
+  lcd.init();
+  // Print a message to the LCD.
+  lcd.backlight();
+  lcd.setCursor(3,0);
+  lcd.print("Hello, world!");
+  lcd.setCursor(2,1);
+  lcd.print("Ywrobot Arduino!");
+   lcd.setCursor(0,2);
+  lcd.print("Arduino LCM IIC 2004");
+   lcd.setCursor(2,3);
+  lcd.print("Power By Ec-yuan!");
 }
 
 void loop() {
