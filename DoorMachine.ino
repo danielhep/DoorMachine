@@ -52,8 +52,8 @@ int currentTime = 0;
 bool nightMode = true;
 
 WiFiServer server(80);
-LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
-  
+LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 16 chars and 2 line display
+
 void setup() {
   pinMode(irqpin, INPUT);
   digitalWrite(irqpin, HIGH); //enable pullup resistor
@@ -82,7 +82,18 @@ void setup() {
   pinMode(BLUEPIN, OUTPUT);
   mpr121_setup();
 
-  lcd.init();                      // initialize the lcd 
+                     // initialize the lcd
+  lcd.init();
+  // Print a message to the LCD.
+  lcd.backlight();
+  lcd.setCursor(3, 0);
+  lcd.print("Hello, world!");
+  lcd.setCursor(2, 1);
+  lcd.print("Ywrobot Arduino!");
+  lcd.setCursor(0, 2);
+  lcd.print("Arduino LCM IIC 2004");
+  lcd.setCursor(2, 3);
+  lcd.print("Power By Ec-yuan!");
 }
 
 void loop() {
@@ -96,20 +107,22 @@ void loop() {
 
 bool motionDetectorTripped = false;
 void checkMotionDetector() {
-  if (digitalRead(MOTION_PIN) == HIGH) {
-    if (!motionDetectorTripped) {
-      motionDetectorCount++;
-      digitalWrite(LED_BUILTIN, LOW);
-      if (nightMode)
-        setColor(15, 0, 0, 10000, 200);
-      else
-        setColor(100, 100, 100, 10000, 200);
-      motionDetectorTripped = true;
-    }
-  } else {
-    if (motionDetectorTripped) {
-      digitalWrite(LED_BUILTIN, HIGH);
-      motionDetectorTripped = false;
+  if (!touchStates[0]) {
+    if (digitalRead(MOTION_PIN) == HIGH) {
+      if (!motionDetectorTripped) {
+        motionDetectorCount++;
+        digitalWrite(LED_BUILTIN, LOW);
+        if (nightMode)
+          setColor(15, 0, 0, 10000, 200);
+        else
+          setColor(100, 100, 100, 10000, 200);
+        motionDetectorTripped = true;
+      }
+    } else {
+      if (motionDetectorTripped) {
+        digitalWrite(LED_BUILTIN, HIGH);
+        motionDetectorTripped = false;
+      }
     }
   }
 }
