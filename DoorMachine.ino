@@ -83,17 +83,6 @@ void setup() {
   mpr121_setup();
 
   lcd.init();                      // initialize the lcd 
-  lcd.init();
-  // Print a message to the LCD.
-  lcd.backlight();
-  lcd.setCursor(3,0);
-  lcd.print("Hello, world!");
-  lcd.setCursor(2,1);
-  lcd.print("Ywrobot Arduino!");
-   lcd.setCursor(0,2);
-  lcd.print("Arduino LCM IIC 2004");
-   lcd.setCursor(2,3);
-  lcd.print("Power By Ec-yuan!");
 }
 
 void loop() {
@@ -102,6 +91,7 @@ void loop() {
   iterateTimeout();
   processNetwork();
   checkMotionDetector();
+  updateLCD();
 }
 
 bool motionDetectorTripped = false;
@@ -137,7 +127,7 @@ void readTouchInputs() {
     for (int i = 0; i < 12; i++) { // Check what electrodes were pressed
       if (touched & (1 << i)) { // i is being touches
 
-        if (touchStates[i] == 0) { // It was not set as touched already
+        if (touchStates[i] == false) { // It was not set as touched already
           //pin i was just touched
           Serial.print("pin ");
           Serial.print(i);
@@ -155,9 +145,9 @@ void readTouchInputs() {
           //pin i is still being touched
         }
 
-        touchStates[i] = 1;      // Set it as touched
+        touchStates[i] = true;      // Set it as touched
       } else { // i is not being touched
-        if (touchStates[i] == 1) { // if it was set as touched before
+        if (touchStates[i] == true) { // if it was set as touched before
           Serial.print("pin ");
           Serial.print(i);
           Serial.println(" is no longer being touched");
@@ -171,7 +161,7 @@ void readTouchInputs() {
 
           //pin i is no longer being touched
         }
-        touchStates[i] = 0;
+        touchStates[i] = false;
       }
 
     }
