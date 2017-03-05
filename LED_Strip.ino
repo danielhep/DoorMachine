@@ -6,11 +6,21 @@ int interceptRGB[3] = {0, 0, 0};
 unsigned long RGBSetTime;
 int RGBFadeTime;
 
+int defaultEffect = EFFECT_WHEEL;
+
+void setDefaultEffect(int effect, bool updateDefault) {
+  defaultEffect = effect;
+  if(updateDefault)
+    setDefault();
+}
+
 void colorChange() {
   if (ledStripEffect == EFFECT_WHEEL)
     colorWheelEffect();
   else if (ledStripEffect == EFFECT_WATER)
     waterWheelEffect();
+  else if (ledStripEffect == EFFECT_DND)
+    DNDEffect();
 
   unsigned long tsnapshot = millis();
   for (int i = 0; i < 3; i++) {
@@ -37,7 +47,7 @@ void setDefault(int fadeTime) {
     setColor(0, 0, 0, 0, fadeTime); // default color
   else {
     //setColor(15, 0, 10, 0, fadeTime);
-    setEffect(EFFECT_WHEEL, 100, 3000);
+    setEffect(defaultEffect, 100, 3000);
   }
 }
 
@@ -51,13 +61,14 @@ void iterateTimeout() {
 // This section is for setting the color and calculating the values for the color slopes
 ////////////////////
 
-void setColor(int R, int G, int B, int t, unsigned long fadeTime) {
+void setColor(int R, int G, int B, int timeout, unsigned long fadeTime) {
+  Serial.println("set color! ");
   setEffect(0, 0, 0); // Get rid of any effect
   setLinearColorGraph(R, G, B, fadeTime); // Set the color fade graph
 
-  if (t > 0) { // If the timeout value input is zero, then just disable the timeout
+  if (timeout > 0) { // If the timeout value input is zero, then just disable the timeout
     timeoutEnable = true;
-    timeout = millis() + t; // Timeout before  reverts to default
+    timeout = millis() + timeout; // Timeout before  reverts to default
   } else {
     timeoutEnable = false;
   }
@@ -130,6 +141,39 @@ void waterWheelEffect() {
     R = 220 * effectStrength / 255;
     G = 21 * effectStrength / 255;
     B = 75 * effectStrength / 255;
+
+   // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
+
+    setLinearColorGraph(R, G, B, effectTime/2);
+
+    wheelFlag = 2;
+  }
+}
+
+void DNDEffect() {
+  int colorTime = millis() % effectTime;
+
+  int R = 0;
+  int G = 0;
+  int B = 0;
+
+  // Serial.println(String(colorTime) + ", " + String(effectTime) + ", " + String(effectStrength));
+
+  if (colorTime > 0 && colorTime < (effectTime / 2) && wheelFlag != 1) {
+    // Serial.println("TIME FOR NUMBER 1");
+    R = 255 * effectStrength / 255;
+    G = 5 * effectStrength / 255;
+    B = 0 * effectStrength / 255;
+
+   // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
+
+    setLinearColorGraph(R, G, B, effectTime/2);
+
+    wheelFlag = 1;
+  } else if (colorTime > effectTime / 2 && colorTime < effectTime && wheelFlag != 2) {
+    R = 255 * effectStrength / 255;
+    G = 50 * effectStrength / 255;
+    B = 0 * effectStrength / 255;
 
    // Serial.println("Effect 2: " + String(R) + ", " + String(G) + ", " + String(B));
 

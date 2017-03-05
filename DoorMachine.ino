@@ -25,9 +25,11 @@
 #include <Wire.h>
 #include <ArduinoJson.h>
 #include <LiquidCrystal_I2C.h>
+#include <BlynkSimpleEsp8266.h>
 
 #define EFFECT_WHEEL 1
 #define EFFECT_WATER 2
+#define EFFECT_DND 3
 
 int irqpin = D3;  // Digital 3
 int REDPIN = D6;
@@ -75,18 +77,20 @@ void setup() {
   Serial.println(WiFi.localIP());
   server.begin();
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  Blynk.config("2ed91f719724482aacdea11ada4c76af");
+  Blynk.connect();
 
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
   mpr121_setup();
 
-                     // initialize the lcd
   lcd.init();
 }
 
 void loop() {
+  Blynk.run();
   readTouchInputs();
   colorChange();
   iterateTimeout();
@@ -102,7 +106,7 @@ void checkMotionDetector() {
       if (!motionDetectorTripped) {
         motionDetectorCount++;
         digitalWrite(LED_BUILTIN, LOW);
-        if (nightMode)
+        if (false)
           setColor(15, 0, 0, 10000, 200);
         else
           setColor(100, 100, 100, 10000, 200);
